@@ -12,7 +12,7 @@ public class MobiOptionsAds {
     public MobiOptionsAds(Context context){
         this.context = context;
         admobInterstitial = new InterstitialAd(context);
-        admobInterstitial.setAdUnitId("");
+        admobInterstitial.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
         admobInterstitial.loadAd(new AdRequest.Builder().build());
     }
 
