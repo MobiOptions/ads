@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.LinearLayout;
 
 import com.mobioptions.ads.MobiOptionsAds;
 
@@ -23,5 +24,11 @@ public class MainActivity extends AppCompatActivity {
                 ads.show("admob_interstitial_1");
             }
         },5500);
+
+        LinearLayout adContainer = findViewById(R.id.ads_holder);
+//        adContainer.addView(ads.banner(), Instance.params);
+        ads.banner(adContainer,"admob_banner_1");
+
+
     }
 }
