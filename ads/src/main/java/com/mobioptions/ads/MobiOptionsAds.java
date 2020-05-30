@@ -10,6 +10,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.ads.AudienceNetworkAds;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -26,15 +28,21 @@ import androidx.annotation.RequiresApi;
 public class MobiOptionsAds {
 
     private static MobiOptionsAds mobiOptionsAdsSingleton;
-    private MobiOptionsAds(){};
-    public static MobiOptionsAds getInstance(){
-        if (mobiOptionsAdsSingleton == null){ //if there is no instance available... create new one
+
+    private MobiOptionsAds() {
+    }
+
+    ;
+
+    public static MobiOptionsAds getInstance() {
+        if (mobiOptionsAdsSingleton == null) { //if there is no instance available... create new one
             mobiOptionsAdsSingleton = new MobiOptionsAds();
         }
         return mobiOptionsAdsSingleton;
     }
 
     public void init(String appID, final Context context, final InitListener initListener) {
+        AudienceNetworkAds.initialize(context);
         final RequestQueue mRequestQueue;
         String url = "http://159.89.138.255/api/adsproject/get/" + appID;
         mRequestQueue = Volley.newRequestQueue(context);
@@ -44,8 +52,6 @@ public class MobiOptionsAds {
             public void onResponse(String response) {
                 Log.D(response);
                 try {
-                    Log.D("Here d");
-
                     JSONObject object = new JSONObject(response);
                     if (!object.getBoolean("status")) {
                         if (object.getInt("code") == 404) {
@@ -57,20 +63,32 @@ public class MobiOptionsAds {
                         }
                     } else {
                         JSONArray ads = object.getJSONObject("adProject").getJSONArray("ads");
-                        Instance.admobInterAds = new HashMap<>();
-                        Instance.admobBannerAds = new HashMap<>();
+                        Instance.InterstitialInstances = new HashMap<>();
+                        Instance.BannerInstances = new HashMap<>();
                         for (int i = 0; i < ads.length(); i++) {
                             JSONObject ad = ads.getJSONObject(i);
-                            if (ad.getString("type").equals("admob_interstitial")) {
+                            if (ad.getString("type").equals("interstitial")) {
+                                //admob stuff
                                 InterstitialAd interstitialAd = new InterstitialAd(context);
-                                interstitialAd.setAdUnitId(ad.getString("ad_id"));
-                                Instance.admobInterAds.put(ad.getString("name"),interstitialAd);
+                                interstitialAd.setAdUnitId(ad.getString("admob_id"));
+                                //facebook stuff
+                                com.facebook.ads.InterstitialAd finterstitialAd = new com.facebook.ads.InterstitialAd(context, ad.getString("facebook_id"));
+                                //adding admob stuff and facebook stuff to mobiotpions stuff
+                                Instance.InterstitialInstances.put(ad.getString("name"), new InterstitialInstance(interstitialAd, finterstitialAd));
+
                             }
-                            if (ad.getString("type").equals("admob_banner")) {
+
+                            if (ad.getString("type").equals("banner")) {
+                                //admob stuff
                                 AdView adView = new AdView(context);
                                 adView.setAdSize(AdSize.BANNER);
-                                adView.setAdUnitId(ad.getString("ad_id"));
-                                Instance.admobBannerAds.put(ad.getString("name"),adView);
+                                adView.setAdUnitId(ad.getString("admob_id"));
+                                //facebook stuff
+                                com.facebook.ads.AdView face = new com.facebook.ads.AdView(context, ad.getString("facebook_id"), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+
+                                //adding admob stuff and facebook stuff to mobiotpions stuff
+                                Instance.BannerInstances.put(ad.getString("name"), new BannerInstance(adView, face));
+
                             }
                         }
                         initListener.onInit();
@@ -90,91 +108,59 @@ public class MobiOptionsAds {
     }
 
 
-
-    public void show(String name) {
-        if(name.contains("admob_interstitial")) {
-            Instance.admobInterAds.get(name).show();
-
-        }
-    }
-
-    public void banner(LinearLayout container, String name) {
-        if(name.contains("admob_banner")) {
-            Instance.admobBannerAds.get(name).loadAd(new AdRequest.Builder().build());
-            container.addView(Instance.admobBannerAds.get(name), Instance.params);
-        }
-    }
-
     public void loadAd(String name) {
-        if(name.contains("admob_interstitial"))
-            Instance.admobInterAds.get(name).loadAd(new AdRequest.Builder().build());
+        if (Instance.InterstitialInstances.containsKey(name)) {
+            Instance.InterstitialInstances.get(name).getAdmob().loadAd(new AdRequest.Builder().build());
+            Instance.InterstitialInstances.get(name).getFacebook().loadAd();
+        } else
+            Log.D("the string provided '" + name + "' doesn't exist in your project");
     }
 
-    public void loadAd(String name,final AdListener adListener) {
-        if(name.contains("admob_interstitial")) {
-            Instance.admobInterAds.get(name).loadAd(new AdRequest.Builder().build());
-            Instance.admobInterAds.get(name).setAdListener(new com.google.android.gms.ads.AdListener(){
+    public void show(final String name) {
+        if (Instance.InterstitialInstances.containsKey(name)) {
+            Instance.InterstitialInstances.get(name).getAdmob().show();
+            Instance.InterstitialInstances.get(name).getAdmob().setAdListener(new AdListener() {
                 @Override
                 public void onAdFailedToLoad(int i) {
-                    super.onAdFailedToLoad(i);
-                    adListener.onAdFailedToLoad(i);
-                }
-
-                @Override
-                public void onAdClosed() {
-                    super.onAdClosed();
-                    adListener.onAdClosed();
-                }
-
-                @Override
-                public void onAdClicked() {
-                    super.onAdClicked();
-                    adListener.onAdClicked();
-                }
-
-                @Override
-                public void onAdImpression() {
-                    super.onAdImpression();
-                    adListener.onAdImpression();
-                }
-
-                @Override
-                public void onAdLeftApplication() {
-                    super.onAdLeftApplication();
-                    adListener.onAdLeftApplication();
-                }
-
-                @Override
-                public void onAdLoaded() {
-                    super.onAdLoaded();
-                    adListener.onAdLoaded();
-                }
-
-                @Override
-                public void onAdOpened() {
-                    super.onAdOpened();
-                    adListener.onAdOpened();
+                    Instance.InterstitialInstances.get(name).getFacebook().show();
                 }
             });
-        }
+        } else
+            Log.D("the string provided '" + name + "' doesn't exist in your project");
+
+    }
+
+    public void banner(final LinearLayout container, final String name) {
+        Instance.BannerInstances.get(name).getAdmob().loadAd(new AdRequest.Builder().build());
+        Instance.BannerInstances.get(name).getAdmob().setAdListener(new AdListener() {
+            @Override
+            public void onAdFailedToLoad(int i) {
+                try {
+                    container.addView(Instance.BannerInstances.get(name).getFacebook(), Instance.params);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                try {
+                    container.addView(Instance.BannerInstances.get(name).getAdmob(), Instance.params);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
 
-    public interface InitListener{
+    public interface InitListener {
         void onInit();
+
         void onError(String error);
     }
-
-    public interface AdListener{
-        void onAdFailedToLoad(int i);
-        void onAdClosed();
-        void onAdClicked();
-        void onAdImpression();
-        void onAdLeftApplication();
-        void onAdLoaded();
-        void onAdOpened();
-    }
-
 
 
 }

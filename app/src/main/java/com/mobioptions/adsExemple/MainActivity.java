@@ -16,18 +16,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final MobiOptionsAds ads = MobiOptionsAds.getInstance();
-        ads.loadAd("admob_interstitial_1");
+        ads.loadAd("interstitial_1");
+
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 Log.d("MobiAds", "run: ");
-                ads.show("admob_interstitial_1");
+                ads.show("interstitial_1");
             }
         },5500);
 
         LinearLayout adContainer = findViewById(R.id.ads_holder);
-//        adContainer.addView(ads.banner(), Instance.params);
-        ads.banner(adContainer,"admob_banner_1");
+        ads.banner(adContainer,"banner_1");
 
 
     }
