@@ -44,7 +44,7 @@ public class MobiOptionsAds {
     public void init(String appID, final Context context, final InitListener initListener) {
         AudienceNetworkAds.initialize(context);
         final RequestQueue mRequestQueue;
-        String url = "http://159.89.138.255/api/adsproject/get/" + appID;
+        String url = "https://mobioptions.com/api/adsproject/get/" + appID;
         mRequestQueue = Volley.newRequestQueue(context);
         final StringRequest mStringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
