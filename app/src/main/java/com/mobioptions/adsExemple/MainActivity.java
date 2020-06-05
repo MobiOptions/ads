@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d("MobiAds", "run: ");
                 ads.show("interstitial_1");
             }
         },5500);
