@@ -57,7 +57,7 @@ public class MobiOptionsAds {
         AudienceNetworkAds.initialize(context);
         this.context = context;
         final RequestQueue mRequestQueue;
-        String url = "https://mobioptions.com/api/adsproject/get/" + appID;
+        String url = "https://api.mobioptions.com/api/adsproject/get/" + appID;
         mRequestQueue = Volley.newRequestQueue(context);
         final StringRequest mStringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -226,6 +226,8 @@ public class MobiOptionsAds {
     }
 
     public void banner(final LinearLayout container, final String name) {
+        if (Instance.InterstitialInstances.containsKey(name)) {
+
         Instance.BannerInstances.get(name).getAdmob().loadAd(new AdRequest.Builder().build());
         Instance.BannerInstances.get(name).getAdmob().setAdListener(new AdListener() {
             @Override
@@ -280,7 +282,8 @@ public class MobiOptionsAds {
                 }
             }
         });
-
+        } else
+            Log.D("the string provided '" + name + "' doesn't exist in your project");
     }
 
 

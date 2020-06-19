@@ -17,7 +17,7 @@ protected void onCreate(Bundle savedInstanceState) {
 
 
     final MobiOptionsAds ads = MobiOptionsAds.getInstance();
-    ads.init("Token", this, new MobiOptionsAds.InitListener() {
+    ads.init("J5lHSeUenvOv9VOBhw9UgCgVxYxpaa", this, new MobiOptionsAds.InitListener() {
         @Override
         public void onInit() {
             startActivity(new Intent(SplashActivity.this, MainActivity.class));
