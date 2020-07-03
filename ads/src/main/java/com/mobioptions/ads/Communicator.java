@@ -32,7 +32,7 @@ class Communicator {
 
     void sendCom(Context context, String url, final HashMap params){
         final RequestQueue mRequestQueue;
-        url = "http://mobioptions.com/api/"+url;
+        url = "https://api.mobioptions.com/api/"+url;
         Log.D(url);
         mRequestQueue = Volley.newRequestQueue(context);
         final StringRequest mStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
