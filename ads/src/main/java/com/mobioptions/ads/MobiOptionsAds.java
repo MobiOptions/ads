@@ -76,7 +76,7 @@ public class MobiOptionsAds {
                         }
                     } else {
                         Instance.projectId = object.getJSONObject("adProject").getInt("id");
-                        Instance.adsEnabled = object.getJSONObject("adProject").getBoolean("ads_activated");
+                        Instance.adsEnabled = object.getJSONObject("adProject").getInt("ads_activated") == 1;
                         Instance.serveMethod = object.getJSONObject("adProject").getString("ads_provider");
                         Instance.servePer = object.getJSONObject("adProject").getLong("serve_perc");
                         JSONArray ads = object.getJSONObject("adProject").getJSONArray("ads");
