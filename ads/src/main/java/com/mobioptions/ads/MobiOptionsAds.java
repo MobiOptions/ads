@@ -87,9 +87,13 @@ public class MobiOptionsAds {
                             if (ad.getString("type").equals("interstitial")) {
                                 //admob stuff
                                 InterstitialAd interstitialAd = new InterstitialAd(context);
-                                interstitialAd.setAdUnitId(Instance.serveMethod.equals("facebook") ? "" : ad.getString("admob_id"));
+                                interstitialAd.setAdUnitId((Instance.serveMethod.equals("admob") || Instance.serveMethod.equals("default")
+                                        || (Instance.serveMethod.equals("rotation") && i%2 == 0)) ? ad.getString("admob_id") : "");
                                 //facebook stuff
-                                com.facebook.ads.InterstitialAd finterstitialAd = new com.facebook.ads.InterstitialAd(context,Instance.serveMethod.equals("admob") ? "" :  ad.getString("facebook_id"));
+                                com.facebook.ads.InterstitialAd finterstitialAd = new com.facebook.ads.InterstitialAd(context,
+                                        (Instance.serveMethod.equals("facebook") || Instance.serveMethod.equals("default")
+                                                || (Instance.serveMethod.equals("rotation") && i%2 == 1)) ? ad.getString("facebook_id") : ""
+                                );
                                 //adding admob stuff and facebook stuff to mobiotpions stuff
                                 Instance.InterstitialInstances.put(ad.getString("name"), new InterstitialInstance(interstitialAd, finterstitialAd));
 
@@ -99,9 +103,13 @@ public class MobiOptionsAds {
                                 //admob stuff
                                 AdView adView = new AdView(context);
                                 adView.setAdSize(AdSize.BANNER);
-                                adView.setAdUnitId(Instance.serveMethod.equals("facebook") ? "" : ad.getString("admob_id"));
+                                adView.setAdUnitId((Instance.serveMethod.equals("admob") || Instance.serveMethod.equals("default")
+                                        ||(Instance.serveMethod.equals("rotation") && i%2 == 0)) ? ad.getString("admob_id") : "");
                                 //facebook stuff
-                                com.facebook.ads.AdView face = new com.facebook.ads.AdView(context,Instance.serveMethod.equals("admob") ? "" :  ad.getString("facebook_id"), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+                                com.facebook.ads.AdView face = new com.facebook.ads.AdView(context,
+                                        (Instance.serveMethod.equals("facebook") || Instance.serveMethod.equals("default")
+                                                || (Instance.serveMethod.equals("rotation") && i%2 == 1)) ? ad.getString("facebook_id") : ""
+                                        , com.facebook.ads.AdSize.BANNER_HEIGHT_50);
 
                                 //adding admob stuff and facebook stuff to mobiotpions stuff
                                 Instance.BannerInstances.put(ad.getString("name"), new BannerInstance(adView, face));
